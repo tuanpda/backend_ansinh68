@@ -35,6 +35,7 @@ if (checkDB === "tcdvthu_ansinh159") {
 } else {
   thumucbienlai =
     "E:\\CODE_APP\\TCDVTHU\\ANSINH68\\tcdvthu_ansinh68_client\\static\\bienlaidientu";
+    // "D:\\";
   urlServer = "14.224.129.177:1973";
   urlServerBackend = "14.224.129.177:4209"; // máy chủ tuấn pda
 }
@@ -3065,8 +3066,8 @@ router.get("/tim-dulieuthe", async (req, res) => {
     const request = pool.request();
 
     if (!isHoTenEmpty) {
-      query += ` AND hoTen = @hoTen`;
-      request.input("hoTen", hoTen.trim());
+      query += ` AND hoTen LIKE @hoTen`;
+      request.input("hoTen", `%${hoTen.trim()}%`);
     }
 
     if (!isSoSoEmpty) {

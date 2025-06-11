@@ -988,7 +988,7 @@ router.post("/apply-invoice-status", async (req, res) => {
 
 // xác nhận huỷ duyệt hồ sơ
 router.post("/cancel-invoice-status", async (req, res) => {
-  const { _id, hoten, masobhxh, hosoIdentity } = req.body;
+  const { _id, hoten, masobhxh, ghichu } = req.body;
 
   let transaction = null;
 
@@ -1002,7 +1002,8 @@ router.post("/cancel-invoice-status", async (req, res) => {
     const request = transaction.request();
     await request
       .input("_id", _id)
-      .query(`UPDATE kekhai SET trangthai=1 WHERE _id=@_id`);
+      .input("ghichu", ghichu)
+      .query(`UPDATE kekhai SET trangthai=1, ghichu=@ghichu WHERE _id=@_id`);
 
     await transaction.commit();
 
@@ -1013,6 +1014,7 @@ router.post("/cancel-invoice-status", async (req, res) => {
         _id,
         hoten,
         masobhxh,
+        ghichu,
       },
     });
   } catch (error) {
@@ -2781,7 +2783,10 @@ router.post("/thongke-hosokekhai", async (req, res) => {
           COALESCE(SUM(CASE WHEN status_naptien = 0 AND trangthai = 1 THEN 1 ELSE 0 END), 0) AS hoso_chuaduyet,
           COALESCE(SUM(CASE WHEN trangthai = 0 AND status_naptien=0 THEN 1 ELSE 0 END), 0) AS hoso_chuagui,
           COUNT(DISTINCT sohoso) AS tong_sohoso,
-          COALESCE(SUM(CAST(sotien AS FLOAT)), 0) AS tong_sotien,
+          COALESCE(
+              SUM(CASE WHEN status_naptien = 1 THEN CAST(sotien AS FLOAT) ELSE 0 END),
+              0
+            ) AS tong_sotien,
           COALESCE(SUM(CASE WHEN maloaihinh = 'AR' THEN 1 ELSE 0 END), 0) AS tong_AR,
           COALESCE(SUM(CASE WHEN maloaihinh = 'BI' THEN 1 ELSE 0 END), 0) AS tong_BI,
           COALESCE(SUM(CASE WHEN maloaihinh = 'IS' THEN 1 ELSE 0 END), 0) AS tong_IS
@@ -2815,7 +2820,10 @@ router.get("/thongke-hosokekhai-tonghop", async (req, res) => {
           COALESCE(SUM(CASE WHEN status_naptien = 0 AND trangthai = 1 THEN 1 ELSE 0 END), 0) AS hoso_chuaduyet,
           COALESCE(SUM(CASE WHEN trangthai = 0 AND status_naptien=0 THEN 1 ELSE 0 END), 0) AS hoso_chuagui,
           COUNT(DISTINCT sohoso) AS tong_sohoso,
-          COALESCE(SUM(CAST(sotien AS FLOAT)), 0) AS tong_sotien,
+          COALESCE(
+              SUM(CASE WHEN status_naptien = 1 THEN CAST(sotien AS FLOAT) ELSE 0 END),
+              0
+            ) AS tong_sotien,
           COALESCE(SUM(CASE WHEN maloaihinh = 'AR' THEN 1 ELSE 0 END), 0) AS tong_AR,
           COALESCE(SUM(CASE WHEN maloaihinh = 'BI' THEN 1 ELSE 0 END), 0) AS tong_BI,
           COALESCE(SUM(CASE WHEN maloaihinh = 'IS' THEN 1 ELSE 0 END), 0) AS tong_IS

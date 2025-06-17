@@ -3216,7 +3216,7 @@ router.get("/bienlai-search", async (req, res) => {
 
 // quản lý biên lai từng điểm thu
 router.get("/bienlai-search-diemthu", async (req, res) => {
-  console.log(req.query);
+  // console.log(req.query);
   
   try {
     const {
